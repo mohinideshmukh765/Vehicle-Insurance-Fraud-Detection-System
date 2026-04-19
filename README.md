@@ -4,9 +4,9 @@ A full-stack web application designed to detect fraudulent vehicle insurance cla
 
 ## 🖼️ Project Preview
 
-| Dashboard Overview | Detailed Claim Analysis |
-| :---: | :---: |
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Modal](docs/screenshots/modal.png) |
+| Dashboard Overview | New Claim Prediction | Claim History Analysis |
+| :---: | :---: | :---: |
+| ![Dashboard](Screenshots/dashboard.png) | ![Predict](Screenshots/predict.png) | ![History](Screenshots/history.png) |
 
 ## 🚀 Features
 
@@ -27,7 +27,6 @@ A full-stack web application designed to detect fraudulent vehicle insurance cla
 ## 📋 Prerequisites
 
 - **Python 3.10+**
-- **Node.js** (for npm)
 - **MySQL Server**
 - **Virtual Environment** (recommended for Python)
 

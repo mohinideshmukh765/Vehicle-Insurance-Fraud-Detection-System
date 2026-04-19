@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+env/
+venv/
+.env
+
+# Node
+node_modules/
+dist/
+.eslintcache
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+fraud_oracle.csv
+backend/data/fraud_oracle.csv
+best_fraud_detection_model.pkl
+backend/model/best_fraud_detection_model.pkl
+extracted_notebook_code.py
+extract_nb.py
