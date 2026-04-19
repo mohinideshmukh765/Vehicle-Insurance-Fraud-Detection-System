@@ -19,7 +19,7 @@ A full-stack web application designed to detect fraudulent vehicle insurance cla
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React.js (Vite), Axios, Lucide-React, Vanilla CSS (Premium styling).
+- **Frontend**: React.js
 - **Backend**: Flask (Python), Scikit-learn, Pandas, Joblib, JWT.
 - **Database**: MySQL.
 - **Machine Learning**: RandomForestClassifier trained on the Insurance Fraud dataset.
