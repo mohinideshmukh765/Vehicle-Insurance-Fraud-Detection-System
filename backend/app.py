@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
-from db_config import get_db_connection
-from model_service import model_service
+from backend.db_config import get_db_connection
+from backend.model_service import model_service
 import jwt
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,14 +10,20 @@ from functools import wraps
 import os
 import logging
 
+# ================= APP INIT =================
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
-# Logging
 logging.basicConfig(level=logging.INFO)
 
-# Secret Key
+# Secret key (use Azure App Settings in production)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret')
+
+
+# ================= HEALTH CHECK (IMPORTANT FOR AZURE) =================
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({"status": "API is running"}), 200
 
 
 # ================= JWT DECORATOR =================
@@ -27,13 +33,10 @@ def token_required(f):
         auth_header = request.headers.get('Authorization')
 
         if not auth_header:
-            return jsonify({'message': 'Token is missing!'}), 401
+            return jsonify({'message': 'Token is missing'}), 401
 
         try:
-            if auth_header.startswith('Bearer '):
-                token = auth_header.split(" ")[1]
-            else:
-                token = auth_header
+            token = auth_header.split(" ")[1] if auth_header.startswith("Bearer ") else auth_header
 
             data = jwt.decode(
                 token,
@@ -44,14 +47,12 @@ def token_required(f):
             current_user_id = data['user_id']
 
         except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired'}), 401
-
+            return jsonify({'message': 'Token expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token'}), 401
-
         except Exception as e:
-            logging.error(str(e))
-            return jsonify({'message': 'Token processing error'}), 401
+            logging.error(f"JWT error: {str(e)}")
+            return jsonify({'message': 'Token error'}), 401
 
         return f(current_user_id, *args, **kwargs)
 
@@ -61,7 +62,10 @@ def token_required(f):
 # ================= REGISTER =================
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.json
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({'message': 'Invalid JSON'}), 400
 
     username = data.get('username')
     password = data.get('password')
@@ -84,10 +88,12 @@ def register():
             (username, hashed_password, email)
         )
         conn.commit()
+
         return jsonify({'message': 'User registered successfully'}), 201
 
     except mysql.connector.Error as err:
-        return jsonify({'message': f'Registration failed: {err}'}), 400
+        logging.error(str(err))
+        return jsonify({'message': 'Registration failed'}), 400
 
     finally:
         cursor.close()
@@ -97,7 +103,10 @@ def register():
 # ================= LOGIN =================
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.json
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({'message': 'Invalid JSON'}), 400
 
     username = data.get('username')
     password = data.get('password')
@@ -107,37 +116,46 @@ def login():
         return jsonify({'message': 'Database connection failed'}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
 
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
 
-    if not user:
-        return jsonify({'message': 'User not found'}), 404
+        if not user:
+            return jsonify({'message': 'User not found'}), 404
 
-    if check_password_hash(user['password'], password):
-        token = jwt.encode(
-            {
-                'user_id': user['id'],
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-            },
-            app.config['SECRET_KEY'],
-            algorithm="HS256"
-        )
+        if check_password_hash(user['password'], password):
+            token = jwt.encode(
+                {
+                    'user_id': user['id'],
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+                },
+                app.config['SECRET_KEY'],
+                algorithm="HS256"
+            )
 
-        return jsonify({'token': token, 'username': user['username']})
+            return jsonify({
+                'token': token,
+                'username': user['username']
+            })
 
-    return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({'message': 'Invalid credentials'}), 401
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 # ================= PREDICT =================
 @app.route('/predict', methods=['POST'])
 @token_required
 def predict(user_id):
-    try:
-        data = request.json
+    data = request.get_json(silent=True)
 
+    if not data:
+        return jsonify({'message': 'Invalid JSON'}), 400
+
+    try:
         result = model_service.predict(data)
 
         conn = get_db_connection()
@@ -159,9 +177,11 @@ def predict(user_id):
         """
 
         feature_values = [
-            user_id, data.get('Make'), data.get('AccidentArea'), data.get('Sex'),
-            data.get('MaritalStatus'), data.get('Fault'), data.get('VehicleCategory'),
-            data.get('VehiclePrice'), data.get('Year'), data.get('DriverRating'),
+            user_id,
+            data.get('Make'), data.get('AccidentArea'), data.get('Sex'),
+            data.get('MaritalStatus'), data.get('Fault'),
+            data.get('VehicleCategory'), data.get('VehiclePrice'),
+            data.get('Year'), data.get('DriverRating'),
             data.get('Days_Policy_Accident'), data.get('Days_Policy_Claim'),
             data.get('PastNumberOfClaims'), data.get('AgeOfVehicle'),
             data.get('AgeOfPolicyHolder'), data.get('PoliceReportFiled'),
@@ -174,14 +194,17 @@ def predict(user_id):
         cursor.execute(insert_query, feature_values)
         conn.commit()
 
-        cursor.close()
-        conn.close()
-
         return jsonify(result)
 
     except Exception as e:
-        logging.error(str(e))
+        logging.error(f"Prediction error: {str(e)}")
         return jsonify({'message': 'Prediction failed'}), 500
+
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals() and conn:
+            conn.close()
 
 
 # ================= HISTORY =================
@@ -193,18 +216,21 @@ def history(user_id):
         return jsonify({'message': 'Database connection failed'}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        "SELECT * FROM fraud_claims WHERE user_id = %s ORDER BY claim_date DESC",
-        (user_id,)
-    )
 
-    claims = cursor.fetchall()
+    try:
+        cursor.execute(
+            "SELECT * FROM fraud_claims WHERE user_id = %s ORDER BY claim_date DESC",
+            (user_id,)
+        )
 
-    cursor.close()
-    conn.close()
+        claims = cursor.fetchall()
+        return jsonify(claims)
 
-    return jsonify(claims)
+    finally:
+        cursor.close()
+        conn.close()
 
 
+# ================= MAIN =================
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=8000)

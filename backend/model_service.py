@@ -3,12 +3,16 @@ import pandas as pd
 import os
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
 class ModelService:
     def __init__(self):
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        # Absolute base directory (works on Azure)
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
 
-        self.model_path = os.path.join(base_dir, 'model', 'best_fraud_detection_model.pkl')
-        self.encoders_path = os.path.join(base_dir, 'model', 'encoders.pkl')
+        # Paths to model files
+        self.model_path = os.path.join(self.base_dir, "model", "best_fraud_detection_model.pkl")
+        self.encoders_path = os.path.join(self.base_dir, "model", "encoders.pkl")
 
         self.model = None
         self.encoders = {}
@@ -25,63 +29,66 @@ class ModelService:
         self._initialize()
 
     def _initialize(self):
-        logging.info(f"Model path: {self.model_path}")
-        logging.info(f"Encoders path: {self.encoders_path}")
-
         try:
+            logging.info(f"Base directory: {self.base_dir}")
+            logging.info(f"Model path: {self.model_path}")
+            logging.info(f"Encoders path: {self.encoders_path}")
+
+            # Validate files exist
             if not os.path.exists(self.model_path):
-                raise FileNotFoundError(f"Model not found at {self.model_path}")
+                raise FileNotFoundError(f"Model NOT FOUND at {self.model_path}")
 
             if not os.path.exists(self.encoders_path):
-                raise FileNotFoundError(f"Encoders not found at {self.encoders_path}")
+                raise FileNotFoundError(f"Encoders NOT FOUND at {self.encoders_path}")
 
+            # Load model
             self.model = joblib.load(self.model_path)
             self.encoders = joblib.load(self.encoders_path)
 
-            logging.info("Model and encoders loaded successfully")
+            logging.info("✅ Model and encoders loaded successfully")
 
         except Exception as e:
-            logging.error(f"Initialization error: {str(e)}")
-            raise e
-
+            logging.error(f"❌ Initialization failed: {str(e)}")
+            raise
 
     def predict(self, input_data):
         try:
-            # Create DataFrame
+            # Convert to DataFrame
             df_input = pd.DataFrame([input_data])
 
             # Ensure all required columns exist
             for col in self.feature_cols:
                 if col not in df_input.columns:
-                    df_input[col] = None
+                    df_input[col] = "Unknown"
 
             # Reorder columns
             df_input = df_input[self.feature_cols]
 
-            # Apply encoding
-            for col, le in self.encoders.items():
+            # Apply encoders safely
+            for col, encoder in self.encoders.items():
                 if col in df_input.columns:
-                    val = str(df_input[col].iloc[0])
+                    value = str(df_input[col].iloc[0])
 
-                    if val not in le.classes_:
-                        logging.warning(f"Unseen value '{val}' in column '{col}', using fallback")
-                        val = le.classes_[0]
+                    # Handle unseen values
+                    if value not in encoder.classes_:
+                        logging.warning(f"Unseen value '{value}' in '{col}', using default")
+                        value = encoder.classes_[0]
 
-                    df_input[col] = le.transform([val])
+                    df_input[col] = encoder.transform([value])
 
             # Prediction
-            prediction = self.model.predict(df_input)
-            probability = self.model.predict_proba(df_input)
+            prediction = self.model.predict(df_input)[0]
+            probability = self.model.predict_proba(df_input)[0][1]
 
             return {
-                'is_fraud': int(prediction[0]),
-                'probability': float(probability[0][1])
+                "is_fraud": int(prediction),
+                "probability": float(probability)
             }
 
         except Exception as e:
-            logging.error(f"Prediction error: {str(e)}")
-            raise e
+            logging.error(f"❌ Prediction failed: {str(e)}")
+            raise
 
 
-# Singleton instance
+# Singleton instance (loads once)
 model_service = ModelService()
