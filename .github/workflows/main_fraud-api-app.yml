@@ -19,10 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python version
-        uses: actions/setup-python@v5
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.11'
+          name: python-app
+          path: .  # Ensure there is a dot here to pick everything in the root
 
       # We install dependencies here just to validate the requirements.txt is valid
       - name: Install dependencies
