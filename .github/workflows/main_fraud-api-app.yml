@@ -1,7 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
 name: Build and deploy Python app to Azure Web App - fraud-api-app
 
 on:
@@ -10,28 +6,37 @@ on:
       - main
   workflow_dispatch:
 
+# Fixes the Node.js deprecation warning by opting into the newer runner environment
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python version
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # We don't need to install dependencies on the runner 
-      # because Azure (Oryx) will do it on the server.
-      # We just zip the source code.
+      - name: Create venv and Install dependencies
+        run: |
+          python -m venv antenv
+          source antenv/bin/activate
+          pip install -r requirements.txt
+                
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
           path: |
             .
-            !venv/
-            !.git/
+            !antenv/
             !.github/
 
   deploy:
@@ -42,21 +47,22 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact
+      - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: . # This puts app.py in the root
+          path: . # CRITICAL: Ensures files are extracted into the current working directory
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B8073E9838034E36B267810F259E06BE }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DC0AC8AFFE2F48BE9522306BBACE6A4C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F9213FEE6AF747F880EFEF48F2338EA8 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_ACFAE553BB2842B5A78F5E494E3618E3 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3C8EAB25F24E4A5D9F824245B8D46935 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F78D78DB330A4A97BBEAE0B9CB3D1D0F }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'fraud-api-app'
-          package: .  # Deploy the contents of the current directory
+          slot-name: 'Production'
+          package: . # CRITICAL: Explicitly tells Azure to deploy the contents of the current folder
