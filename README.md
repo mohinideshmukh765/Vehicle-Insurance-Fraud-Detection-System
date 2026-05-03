@@ -44,11 +44,7 @@ A full-stack web application designed to detect fraudulent vehicle insurance cla
    *Note: This creates the `vehicle_fraud_db` database and necessary tables.*
 
 ### 2. Backend Setup
-1. Navigate to the `backend` directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
+1. Create and activate a virtual environment in the root directory:
    ```bash
    python -m venv env
    # Windows:
@@ -85,10 +81,9 @@ A full-stack web application designed to detect fraudulent vehicle insurance cla
 
 ```
 fraud-detection/
-├── backend/
-│   ├── app.py                  # Main API server
-│   ├── model_service.py        # ML Model prediction logic
-│   └── db_config.py            # MySQL configuration
+├── app.py                  # Main API server
+├── model_service.py        # ML Model prediction logic
+├── db_config.py            # MySQL configuration
 ├── database/
 │   └── init.sql                # SQL schema for deployment
 ├── frontend/

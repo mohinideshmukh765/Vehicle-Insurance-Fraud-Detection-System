@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
-from backend.db_config import get_db_connection
-from backend.model_service import model_service
+from db_config import get_db_connection
+from model_service import model_service
 import jwt
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
