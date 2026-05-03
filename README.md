@@ -88,17 +88,20 @@ fraud-detection/
 ├── backend/
 │   ├── app.py                  # Main API server
 │   ├── model_service.py        # ML Model prediction logic
-│   ├── db_config.py            # MySQL configuration
-│   ├── data/                   # Original dataset for dynamic encoding
-│   └── model/                  # Serialized .pkl model file
+│   └── db_config.py            # MySQL configuration
+├── database/
+│   └── init.sql                # SQL schema for deployment
 ├── frontend/
 │   ├── src/
 │   │   ├── components/         # UI Elements (Form, Dashboard, etc.)
 │   │   ├── context/            # Authentication Context
 │   │   └── assets/             # Images and styles
 │   └── package.json
-└── database/
-    └── init.sql                # SQL schema for deployment
+├── model/
+│   └── best_fraud_detection_model.pkl  # Serialized .pkl model file
+└── training/
+    ├── fraud_oracle.csv        # Original dataset for dynamic encoding
+    └── train.ipynb             # Model training notebook
 ```
 
 ## 🧠 Model Information

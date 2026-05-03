@@ -6,8 +6,9 @@ import os
 
 class ModelService:
     def __init__(self):
-        self.model_path = os.path.join(os.path.dirname(__file__), 'model', 'best_fraud_detection_model.pkl')
-        self.data_path = os.path.join(os.path.dirname(__file__), 'data', 'fraud_oracle.csv')
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        self.model_path = os.path.join(base_dir, 'model', 'best_fraud_detection_model.pkl')
+        self.data_path = os.path.join(base_dir, 'training', 'fraud_oracle.csv')
         self.model = None
         self.encoders = {}
         self.feature_cols = [
