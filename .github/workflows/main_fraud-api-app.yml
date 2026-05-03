@@ -1,3 +1,6 @@
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
+
 name: Build and deploy Python app to Azure Web App - fraud-api-app
 
 on:
@@ -5,9 +8,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -18,26 +18,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python version
+      # We install dependencies here just to validate the requirements.txt is valid
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # We install locally just to verify requirements.txt is valid before uploading
-      - name: Install dependencies (Validation)
-        run: |
-          pip install -r requirements.txt
-                
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          # Upload the root files. Do NOT upload a local antenv.
-          # Azure will build its own antenv on the server.
+          # CRITICAL: We point specifically to the current directory 
+          # and ensure the zip doesn't include the virtual env
           path: |
             .
-            !.github/
             !antenv/
+            !.github/
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,19 +50,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: . 
+          # DOWNLOAD TO CURRENT DIRECTORY
+          path: .
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_ACFAE553BB2842B5A78F5E494E3618E3 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3C8EAB25F24E4A5D9F824245B8D46935 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F78D78DB330A4A97BBEAE0B9CB3D1D0F }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B8073E9838034E36B267810F259E06BE }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DC0AC8AFFE2F48BE9522306BBACE6A4C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F9213FEE6AF747F880EFEF48F2338EA8 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
           app-name: 'fraud-api-app'
           slot-name: 'Production'
-          # Use '.' to deploy the current directory (which contains app.py and requirements.txt)
+          # Use '.' to deploy the files directly to the root of the web app
           package: .
