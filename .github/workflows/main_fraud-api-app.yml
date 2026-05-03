@@ -6,7 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-# Fixes the Node.js deprecation warning by opting into the newer runner environment
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -24,20 +23,21 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Create venv and Install dependencies
+      # We install locally just to verify requirements.txt is valid before uploading
+      - name: Install dependencies (Validation)
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
           pip install -r requirements.txt
                 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
+          # Upload the root files. Do NOT upload a local antenv.
+          # Azure will build its own antenv on the server.
           path: |
             .
-            !antenv/
             !.github/
+            !antenv/
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: . # CRITICAL: Ensures files are extracted into the current working directory
+          path: . 
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -65,5 +65,5 @@ jobs:
         with:
           app-name: 'fraud-api-app'
           slot-name: 'Production'
-          # Instead of '.', use the specific zip/folder path
-          package: ./python-app.zip
+          # Use '.' to deploy the current directory (which contains app.py and requirements.txt)
+          package: .
