@@ -13,31 +13,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # We don't need to install dependencies on the runner 
+      # because Azure (Oryx) will do it on the server.
+      # We just zip the source code.
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: .  # Ensure there is a dot here to pick everything in the root
-
-      # We install dependencies here just to validate the requirements.txt is valid
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          # CRITICAL FIX: We point specifically to the current directory 
-          # and ensure the zip doesn't include the virtual env
           path: |
             .
-            !antenv/
+            !venv/
+            !.git/
             !.github/
 
   deploy:
@@ -52,8 +46,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          # DOWNLOAD TO CURRENT DIRECTORY
-          path: .
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -64,7 +56,6 @@ jobs:
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
           app-name: 'fraud-api-app'
-          slot-name: 'Production'
+          package: .
