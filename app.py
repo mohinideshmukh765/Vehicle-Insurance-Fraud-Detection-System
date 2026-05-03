@@ -15,8 +15,8 @@ app = Flask(__name__)
 CORS(app)
 
 logging.basicConfig(level=logging.INFO)
-############
-# Secret key (use Azure App Settings in production)
+##########################################################################
+# # Secret key (use Azure App Settings in production)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret')
 
 
