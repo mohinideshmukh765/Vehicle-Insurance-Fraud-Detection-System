@@ -45,19 +45,22 @@ jobs:
       id-token: write
       contents: read
 
-   steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+    steps:
+      # 1. Download the artifact created in the 'build' job
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
         with:
-          python-version: '3.11'
+          name: python-app
+          path: . # This puts app.py and your code into the current runner directory
 
+      # 2. Zip the downloaded files
       - name: Zip artifact for deployment
-        run: zip -r release.zip . # This creates a standard zip instead of a zst
+        run: zip -r release.zip .
 
+      # 3. Deploy the zip
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'fraud-api-app'
-          package: release.zip # Deploy the zip directly
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Ensure this secret is set
+          package: release.zip
