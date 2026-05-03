@@ -45,26 +45,19 @@ jobs:
       id-token: write
       contents: read
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: python-app
-          # DOWNLOAD TO CURRENT DIRECTORY
-          path: .
+   steps:
+      - uses: actions/checkout@v4
 
-      - name: Login to Azure
-        uses: azure/login@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B8073E9838034E36B267810F259E06BE }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DC0AC8AFFE2F48BE9522306BBACE6A4C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F9213FEE6AF747F880EFEF48F2338EA8 }}
+          python-version: '3.11'
+
+      - name: Zip artifact for deployment
+        run: zip -r release.zip . # This creates a standard zip instead of a zst
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
           app-name: 'fraud-api-app'
-          slot-name: 'Production'
-          # Use '.' to deploy the files directly to the root of the web app
-          package: .
+          package: release.zip # Deploy the zip directly
