@@ -8,7 +8,7 @@ class ModelService:
     def __init__(self):
         base_dir = os.path.dirname(os.path.dirname(__file__))
         self.model_path = os.path.join(base_dir, 'model', 'best_fraud_detection_model.pkl')
-        self.data_path = os.path.join(base_dir, 'training', 'fraud_oracle.csv')
+        self.encoders_path = os.path.join(base_dir, 'model', 'encoders.pkl')
         self.model = None
         self.encoders = {}
         self.feature_cols = [
@@ -25,18 +25,8 @@ class ModelService:
         # Load Model
         self.model = joblib.load(self.model_path)
         
-        # Load Data to fit encoders (as they weren't saved in the original notebook)
-        df = pd.read_csv(self.data_path)
-        
-        # The notebook used LabelEncoder on all object columns + 'Year'
-        categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
-        if 'Year' not in categorical_cols:
-            categorical_cols.append('Year')
-            
-        for col in categorical_cols:
-            le = LabelEncoder()
-            le.fit(df[col].astype(str))
-            self.encoders[col] = le
+        # Load Encoders
+        self.encoders = joblib.load(self.encoders_path)
             
     def predict(self, input_data):
         """
