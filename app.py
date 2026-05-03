@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
 import logging
-#############################################
+
 # ================= APP INIT =================
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 # Secret key (use Azure App Settings in production)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret')
 
-####################################################################
+
 # ================= HEALTH CHECK (IMPORTANT FOR AZURE) =================
 @app.route('/', methods=['GET'])
 def home():
