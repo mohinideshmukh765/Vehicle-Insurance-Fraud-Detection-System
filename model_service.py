@@ -88,7 +88,7 @@ class ModelService:
         except Exception as e:
             logging.error(f"❌ Prediction failed: {str(e)}")
             raise
-
+############################################
 
 # Singleton instance (loads once)
 model_service = ModelService()
