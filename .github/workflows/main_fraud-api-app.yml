@@ -65,4 +65,5 @@ jobs:
         with:
           app-name: 'fraud-api-app'
           slot-name: 'Production'
-          package: . # CRITICAL: Explicitly tells Azure to deploy the contents of the current folder
+          # Instead of '.', use the specific zip/folder path
+          package: ./python-app.zip
