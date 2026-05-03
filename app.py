@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
 import logging
-
+#############################################
 # ================= APP INIT =================
 app = Flask(__name__)
 CORS(app)
