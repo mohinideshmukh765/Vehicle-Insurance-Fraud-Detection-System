@@ -61,8 +61,7 @@ const FraudForm = () => {
     setLoading(true);
     setResult(null);
     try {
-      const API_URL = import.meta.env.VITE_API_URL;
-      const res = await axios.post(`${API_URL}/predict`, formData, {
+      const res = await axios.post("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/predict", formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setResult(res.data);

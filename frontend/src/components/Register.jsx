@@ -12,9 +12,8 @@ const Register = () => {
     e.preventDefault();
     setError(''); // Clear previous errors
     try {
-      const API_URL = import.meta.env.VITE_API_URL;
-      console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
-      const res = await axios.post(`${API_URL}/register`, formData);
+      const res = await axios.post("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/register", formData);
+
       setSuccess(true); // <--- Add this line
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
