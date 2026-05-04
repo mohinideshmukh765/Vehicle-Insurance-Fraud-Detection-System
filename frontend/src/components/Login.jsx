@@ -12,7 +12,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/login', formData);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, formData);
+
       login(res.data.token, res.data.username);
       navigate('/dashboard');
     } catch (err) {
@@ -28,21 +29,21 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Username</label>
-            <input 
-              type="text" 
-              className="form-input" 
+            <input
+              type="text"
+              className="form-input"
               value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               required
             />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              className="form-input" 
+            <input
+              type="password"
+              className="form-input"
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
             />
           </div>

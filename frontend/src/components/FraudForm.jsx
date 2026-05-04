@@ -7,7 +7,7 @@ const FraudForm = () => {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     Make: 'Honda',
     AccidentArea: 'Urban',
@@ -61,8 +61,8 @@ const FraudForm = () => {
     setLoading(true);
     setResult(null);
     try {
-      const res = await axios.post('http://localhost:5000/predict', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/predict`, formData, {
+        headers: { Authorization: `Bearer ${ token }` }
       });
       setResult(res.data);
     } catch (err) {

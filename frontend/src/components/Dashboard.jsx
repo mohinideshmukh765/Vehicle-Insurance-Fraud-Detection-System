@@ -13,8 +13,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/history', {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/history`, {
+          headers: { Authorization: `Bearer ${ token }` }
         });
         setClaims(res.data);
       } catch (err) {
@@ -204,32 +204,32 @@ const Dashboard = () => {
                   <DetailItem label="Gender" value={selectedClaim.sex} />
                   <DetailItem label="Marital Status" value={selectedClaim.marital_status} />
                   <DetailItem label="Age Group" value={selectedClaim.age_of_policy_holder} />
-                  <DetailItem label="Driver Rating" value={`${selectedClaim.driver_rating} / 4`} />
-                </div>
-              </div>
+                  <DetailItem label="Driver Rating" value={`${ selectedClaim.driver_rating } / 4`} / >
+                </div >
+              </div >
 
-              <div style={{ marginBottom: '1rem' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', fontSize: '1rem', color: 'var(--primary)' }}>
-                  <FileText size={18} /> Incident & Claim Information
-                </h3>
-                <div className="detail-grid">
-                  <DetailItem label="Accident Area" value={selectedClaim.accident_area} icon={MapPin} />
-                  <DetailItem label="Fault Party" value={selectedClaim.fault} />
-                  <DetailItem label="Police Report" value={selectedClaim.police_report_filed} />
-                  <DetailItem label="Witness Present" value={selectedClaim.witness_present} />
-                  <DetailItem label="Policy (Accident)" value={selectedClaim.days_policy_accident} />
-                  <DetailItem label="Policy (Claim)" value={selectedClaim.days_policy_claim} />
-                  <DetailItem label="Past Claims" value={selectedClaim.past_number_of_claims} />
-                  <DetailItem label="Supplements" value={selectedClaim.number_of_suppliments} />
-                  <DetailItem label="Address Change" value={selectedClaim.address_change_claim} />
-                  <DetailItem label="Analysis Date" value={new Date(selectedClaim.claim_date).toLocaleDateString()} icon={Clock} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+  <div style={{ marginBottom: '1rem' }}>
+    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', fontSize: '1rem', color: 'var(--primary)' }}>
+      <FileText size={18} /> Incident & Claim Information
+    </h3>
+    <div className="detail-grid">
+      <DetailItem label="Accident Area" value={selectedClaim.accident_area} icon={MapPin} />
+      <DetailItem label="Fault Party" value={selectedClaim.fault} />
+      <DetailItem label="Police Report" value={selectedClaim.police_report_filed} />
+      <DetailItem label="Witness Present" value={selectedClaim.witness_present} />
+      <DetailItem label="Policy (Accident)" value={selectedClaim.days_policy_accident} />
+      <DetailItem label="Policy (Claim)" value={selectedClaim.days_policy_claim} />
+      <DetailItem label="Past Claims" value={selectedClaim.past_number_of_claims} />
+      <DetailItem label="Supplements" value={selectedClaim.number_of_suppliments} />
+      <DetailItem label="Address Change" value={selectedClaim.address_change_claim} />
+      <DetailItem label="Analysis Date" value={new Date(selectedClaim.claim_date).toLocaleDateString()} icon={Clock} />
     </div>
+  </div>
+            </div >
+          </div >
+        </div >
+      )}
+    </div >
   );
 };
 
