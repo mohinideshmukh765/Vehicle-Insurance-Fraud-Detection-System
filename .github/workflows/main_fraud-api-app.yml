@@ -50,7 +50,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: . # CRITICAL: Ensures files are extracted into the current working directory
+          path: ./release  # Download to a specific subfolder
+
+      - name: Zip artifact for deployment
+        run: |
+          cd release
+          zip -r ../release.zip .  # Zip everything inside the folder, not the folder itself
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -64,4 +69,4 @@ jobs:
         with:
           app-name: 'fraud-api-app'
           slot-name: 'Production'
-          package: . # CRITICAL: Explicitly tells Azure to deploy the contents of the current folder
+          package: release.zip  # Deploy the zip file directly
