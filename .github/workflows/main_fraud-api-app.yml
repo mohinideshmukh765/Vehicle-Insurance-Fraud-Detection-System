@@ -53,11 +53,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: . 
+          # Download to a specific folder to avoid path confusion
+          path: ./build_files 
 
       - name: Zip artifact for deployment
-        # This explicitly zips the required files into the root of release.zip
-        run: zip -r release.zip app.py requirements.txt model_service.py db_config.py model/ training/
+        # Move into the folder and zip the contents directly
+        run: |
+          cd build_files
+          zip -r ../release.zip .
+          cd ..
 
       - name: Login to Azure
         uses: azure/login@v2
