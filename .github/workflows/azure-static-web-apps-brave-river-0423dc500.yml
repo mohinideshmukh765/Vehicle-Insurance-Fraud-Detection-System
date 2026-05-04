@@ -40,11 +40,12 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_... }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/" 
+          app_location: "/" # Ensure this points to where your package.json is
           api_location: "" 
-          output_location: "dist"
-        env: # Add this block exactly like this
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          output_location: "dist" 
+        env:
+          # This bakes the URL into your frontend code during the build
+          VITE_API_URL: "https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net"
           ###### End of Repository/Build Configurations ######
           
 
