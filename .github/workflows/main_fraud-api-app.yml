@@ -39,7 +39,6 @@ jobs:
             requirements.txt
             model_service.py
             db_config.py
-            # Add any other folders your app needs, like 'model' or 'static'
             model/
             training/
   deploy:
@@ -54,11 +53,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: .  # Download directly to the root of the runner
+          path: python-app  # Download to a temporary named folder
 
       - name: Zip artifact for deployment
-        # This creates release.zip with app.py at the top level
-        run: zip -r release.zip . -x "*.git*"
+        # Change into that folder so app.py is at the root of the ZIP
+        run: |
+          cd python-app
+          zip -r ../release.zip .
 
       - name: Login to Azure
         uses: azure/login@v2
