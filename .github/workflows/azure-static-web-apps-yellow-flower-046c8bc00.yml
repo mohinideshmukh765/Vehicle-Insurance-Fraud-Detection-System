@@ -31,7 +31,6 @@ jobs:
           api_location: ""
           output_location: "dist"
           skip_app_build: false
-          build_env: "VITE_API_URL=https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
