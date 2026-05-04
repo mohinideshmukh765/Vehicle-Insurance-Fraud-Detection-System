@@ -13,7 +13,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/history`, {
+        const res = await axios.get("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/history", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setClaims(res.data);

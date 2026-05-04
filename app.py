@@ -29,7 +29,13 @@ def log_request_info():
     app.logger.info('Body: %s', request.get_data())
 
 # In app.py
-CORS(app, resources={r"/*": {"origins": "https://brave-river-0423dc500.7.azurestaticapps.net"}})
+CORS(app, resources={r"/*": {
+    "origins": [
+        "http://localhost:5173", 
+        "https://yellow-flower-046c8bc00.7.azurestaticapps.net"
+    ]
+}}, supports_credentials=True)
+
 logging.basicConfig(level=logging.INFO)
 ##########################################################################
 # # Secret key (use Azure App Settings in production)
