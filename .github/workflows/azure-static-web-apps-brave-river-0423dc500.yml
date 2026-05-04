@@ -37,13 +37,14 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          # Change this line to match your screenshot:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BRAVE_RIVER_0423DC500 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/frontend" 
           api_location: "" 
           output_location: "dist" 
-        env: # This MUST be at the same level as 'with'
+        env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           
 
