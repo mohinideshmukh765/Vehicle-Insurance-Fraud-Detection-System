@@ -34,12 +34,10 @@ jobs:
         with:
           name: python-app
           path: |
-            app.py
-            requirements.txt
-            model_service.py
-            db_config.py
-            model/
-            training/
+            .
+            !antenv/
+            !.git/
+            !.github/
 
   deploy:
     runs-on: ubuntu-latest
