@@ -10,8 +10,10 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
     try {
-      const res = await axios.post("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/register", formData); setSuccess(true);
+      const res = await axios.post("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/register", formData);
+      setSuccess(true); // <--- Add this line
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
