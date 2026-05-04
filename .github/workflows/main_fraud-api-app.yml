@@ -35,9 +35,13 @@ jobs:
         with:
           name: python-app
           path: |
-            .
-            !antenv/
-            !.github/
+            app.py
+            requirements.txt
+            model_service.py
+            db_config.py
+            # Add any other folders your app needs, like 'model' or 'static'
+            model/
+            training/
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -50,12 +54,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: ./release  # Download to a specific subfolder
+          path: .  # Download directly to the root of the runner
 
       - name: Zip artifact for deployment
-        run: |
-          cd release
-          zip -r ../release.zip .  # Zip everything inside the folder, not the folder itself
+        # This creates release.zip with app.py at the top level
+        run: zip -r release.zip . -x "*.git*"
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -69,4 +72,4 @@ jobs:
         with:
           app-name: 'fraud-api-app'
           slot-name: 'Production'
-          package: release.zip  # Deploy the zip file directly
+          package: release.zip
