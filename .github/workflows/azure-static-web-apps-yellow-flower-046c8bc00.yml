@@ -30,7 +30,7 @@ jobs:
           app_location: "/frontend" 
           api_location: "" 
           output_location: "dist"
-          skip_app_build: false # Forces a fresh build with the env variable
+          skip_app_build: false # Forces Azure to run a new build with the variable
         env:
           VITE_API_URL: "https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net"
 
