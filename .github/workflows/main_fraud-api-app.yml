@@ -6,7 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-# Fixes the Node.js deprecation warning by opting into the newer runner environment
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -41,6 +40,7 @@ jobs:
             db_config.py
             model/
             training/
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -53,13 +53,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: python-app  # Download to a temporary named folder
+          path: . 
 
       - name: Zip artifact for deployment
-        # Change into that folder so app.py is at the root of the ZIP
-        run: |
-          cd python-app
-          zip -r ../release.zip .
+        # This explicitly zips the required files into the root of release.zip
+        run: zip -r release.zip app.py requirements.txt model_service.py db_config.py model/ training/
 
       - name: Login to Azure
         uses: azure/login@v2
