@@ -7,7 +7,7 @@ const FraudForm = () => {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-
+  ///////////////////
   const [formData, setFormData] = useState({
     Make: 'Honda',
     AccidentArea: 'Urban',
