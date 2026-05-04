@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, AlertTriangle, Send, Loader2 } from 'lucide-react';
-
+// gdgsgsgdsgssgsg
 const FraudForm = () => {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ const FraudForm = () => {
     setResult(null);
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/predict`, formData, {
-        headers: { Authorization: `Bearer ${ token }` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setResult(res.data);
     } catch (err) {
@@ -75,10 +75,10 @@ const FraudForm = () => {
   const renderField = (name, label) => (
     <div className="form-group" key={name}>
       <label>{label}</label>
-      <select 
+      <select
         className="form-input"
         value={formData[name]}
-        onChange={(e) => setFormData({...formData, [name]: e.target.value})}
+        onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
       >
         {options[name].map(opt => <option key={opt} value={opt}>{opt}</option>)}
       </select>
@@ -88,7 +88,7 @@ const FraudForm = () => {
   return (
     <div className="container" style={{ padding: '3rem 0' }}>
       <h1 style={{ marginBottom: '2rem' }}>New Fraud Analysis</h1>
-      
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem', alignItems: 'start' }}>
         <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '2rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
@@ -101,7 +101,7 @@ const FraudForm = () => {
               {renderField('AgeOfVehicle', 'Vehicle Age')}
               {renderField('NumberOfCars', 'Other Cars Involved')}
             </div>
-            
+
             <div className="section">
               <h3 style={{ borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Policy & Driver</h3>
               {renderField('Sex', 'Gender')}
@@ -112,7 +112,7 @@ const FraudForm = () => {
               {renderField('AgentType', 'Agent Type')}
             </div>
           </div>
-          
+
           <div className="section" style={{ marginTop: '2rem' }}>
             <h3 style={{ borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Claim Details</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
@@ -136,9 +136,9 @@ const FraudForm = () => {
 
         <div className="result-side">
           {result && (
-            <div className={`glass-panel ${result.is_fraud === 1 ? 'risk-high' : 'risk-low'}`} style={{ 
-              padding: '2rem', 
-              textAlign: 'center', 
+            <div className={`glass-panel ${result.is_fraud === 1 ? 'risk-high' : 'risk-low'}`} style={{
+              padding: '2rem',
+              textAlign: 'center',
               border: result.is_fraud === 1 ? '2px solid var(--danger)' : '2px solid var(--success)',
               position: 'sticky',
               top: '2rem'
@@ -168,10 +168,10 @@ const FraudForm = () => {
             </div>
           )}
           {loading && (
-             <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-dim)' }}>
-                <Loader2 className="animate-spin" style={{ margin: '0 auto 1rem' }} size={40} />
-                <p>Synthesizing claim data with neural patterns...</p>
-             </div>
+            <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-dim)' }}>
+              <Loader2 className="animate-spin" style={{ margin: '0 auto 1rem' }} size={40} />
+              <p>Synthesizing claim data with neural patterns...</p>
+            </div>
           )}
         </div>
       </div>
