@@ -12,6 +12,22 @@ import logging
 
 # ================= APP INIT =================
 app = Flask(__name__)
+
+
+# ... after app = Flask(__name__) ...
+
+# This forces Flask and your manual logs to show up in the Azure Log Stream
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s'
+)
+
+# Optional: specifically log when the DB connection is attempted
+@app.before_request
+def log_request_info():
+    app.logger.info('Body: %s', request.get_data())
+
 # In app.py
 CORS(app, resources={r"/*": {"origins": "https://brave-river-0423dc500.7.azurestaticapps.net"}})
 logging.basicConfig(level=logging.INFO)

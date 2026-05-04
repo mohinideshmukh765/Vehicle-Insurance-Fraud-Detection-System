@@ -40,11 +40,11 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/" 
+          app_location: "/frontend" 
           api_location: "" 
-          output_location: "dist" # or 'build'
-        env: # Add this section
-          VITE_API_URL: https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net
+          output_location: "dist" 
+        env: # This MUST be at the same level as 'with'
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
           
 
   close_pull_request_job:
