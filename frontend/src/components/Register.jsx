@@ -11,8 +11,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/register`, formData);
-      setSuccess(true);
+      const res = await axios.post("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/register", formData); setSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -28,31 +27,31 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Username</label>
-            <input 
-              type="text" 
-              className="form-input" 
+            <input
+              type="text"
+              className="form-input"
               value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               required
             />
           </div>
           <div className="form-group">
             <label>Email Address</label>
-            <input 
-              type="email" 
-              className="form-input" 
+            <input
+              type="email"
+              className="form-input"
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
             />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              className="form-input" 
+            <input
+              type="password"
+              className="form-input"
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
             />
           </div>
