@@ -22,17 +22,16 @@ jobs:
 
       - name: Build And Deploy
         id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
+        uses: Azure/static-web-apps-deploy@v1 
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_FLOWER_046C8BC00 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/frontend" 
-          api_location: "" 
+          app_location: "/frontend"
+          api_location: ""
           output_location: "dist"
-          skip_app_build: false # Forces Azure to run a new build with the variable
-        env:
-          VITE_API_URL: "https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net"
+          skip_app_build: false
+          build_env: "VITE_API_URL=https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

@@ -12,8 +12,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const res = await axios.post(`${API_URL}/login`, formData);
       // Replace the previous line with this exact URL string
-      const res = await axios.post("https://fraud-api-app-f4ane4evfzc9euae.southindia-01.azurewebsites.net/login", formData);
 
       login(res.data.token, res.data.username);
       navigate('/dashboard');
