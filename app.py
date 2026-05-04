@@ -12,8 +12,8 @@ import logging
 
 # ================= APP INIT =================
 app = Flask(__name__)
-CORS(app)
-
+# In app.py
+CORS(app, resources={r"/*": {"origins": "https://brave-river-0423dc500.7.azurestaticapps.net"}})
 logging.basicConfig(level=logging.INFO)
 ##########################################################################
 # # Secret key (use Azure App Settings in production)
